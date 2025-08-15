@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36109.1 d17.14
+VisualStudioVersion = 17.14.36109.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantasOrnamentales.API", "PlantasOrnamentales.API\PlantasOrnamentales.API.csproj", "{E09436B4-766F-4DC7-8F1A-6A00A7B9D896}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantasOrnamentales.Domain", "PlantasOrnamentales.Domain\PlantasOrnamentales.Domain.csproj", "{48F0FA64-2644-4A3B-BB9C-FC652D26E23A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantasOrnamentales.Infrastucture", "PlantasOrnamentales.Infrastucture\PlantasOrnamentales.Infrastucture.csproj", "{3A2E4C63-73F2-4089-8CAA-B5D88677E5A2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantasOrnamentales.Application", "PlantasOrnamentales.Application\PlantasOrnamentales.Application.csproj", "{44A482EB-14B7-426A-ACD4-995064BBD68F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantasOrnamentales.Infrastructure", "PlantasOrnamentales.Infrastructure\PlantasOrnamentales.Infrastructure.csproj", "{9CC0290E-946F-5C63-C3E8-65D82B3A1F7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{48F0FA64-2644-4A3B-BB9C-FC652D26E23A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48F0FA64-2644-4A3B-BB9C-FC652D26E23A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48F0FA64-2644-4A3B-BB9C-FC652D26E23A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A2E4C63-73F2-4089-8CAA-B5D88677E5A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A2E4C63-73F2-4089-8CAA-B5D88677E5A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A2E4C63-73F2-4089-8CAA-B5D88677E5A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A2E4C63-73F2-4089-8CAA-B5D88677E5A2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{44A482EB-14B7-426A-ACD4-995064BBD68F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44A482EB-14B7-426A-ACD4-995064BBD68F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44A482EB-14B7-426A-ACD4-995064BBD68F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44A482EB-14B7-426A-ACD4-995064BBD68F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CC0290E-946F-5C63-C3E8-65D82B3A1F7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CC0290E-946F-5C63-C3E8-65D82B3A1F7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CC0290E-946F-5C63-C3E8-65D82B3A1F7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CC0290E-946F-5C63-C3E8-65D82B3A1F7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AutoMapper;
+using PlantasOrnamentales.Application.DTOs;
+using PlantasOrnamentales.Domain.Entities;
 
 namespace PlantasOrnamentales.Application.MappingProfiles
 {
-    internal class PlantaProfile
+    public class PlantaProfile : Profile
     {
+        public PlantaProfile()
+        {
+            CreateMap<Planta, PlantaReadDto>().ReverseMap();
+            CreateMap<PlantaCreateDto, Planta>();
+            CreateMap<PlantaUpdateDto, Planta>();
+        }
     }
 }
