@@ -1,0 +1,295 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Guía de Plantas Ornamentales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Animaciones suaves */
+        .fade-in {
+            animation: fade .25s ease-out both
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(6px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .btn {
+            @apply rounded-xl px-4 py-2 transition active:scale-[.98];
+        }
+
+        .btn-primary {
+            @apply bg-emerald-600 text-white hover:bg-emerald-700;
+        }
+
+        .btn-ghost {
+            @apply border hover:bg-white/60;
+        }
+
+        .chip {
+            @apply inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-medium;
+        }
+
+        .field {
+            @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-300;
+        }
+
+        .card {
+            @apply bg-white/80 backdrop-blur rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-b from-emerald-50 to-white text-slate-800">
+    <!-- HERO -->
+    <header class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 text-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="py-6 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="size-10 rounded-xl bg-white/20 grid place-items-center text-2xl">🌿</div>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-semibold leading-tight">Guía de Plantas Ornamentales</h1>
+                        <p class="text-white/85 text-sm">Catálogo, cuidados y planificación de tu jardín</p>
+                    </div>
+                </div>
+                <button id="btnNueva" class="btn btn-primary shadow-md">+ Nueva planta</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTROLES -->
+    <section class="max-w-6xl mx-auto px-4 mt-6 fade-in">
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr,320px]">
+            <input id="txtBuscar" type="search" placeholder="Buscar por nombre…" class="field">
+            <select id="selCategoria" class="field">
+                <option value="">Todas las categorías</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- LISTA -->
+    <main class="max-w-6xl mx-auto px-4 py-6">
+        <section id="lista" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"></section>
+
+        <!-- Vacío -->
+        <section id="vacio" class="hidden fade-in text-center py-20">
+            <div class="inline-grid place-items-center gap-4">
+                <div class="size-20 rounded-full bg-emerald-100 grid place-items-center text-4xl">🪴</div>
+                <div>
+                    <h3 class="text-lg font-semibold">No hay plantas registradas</h3>
+                    <p class="text-slate-500">Agrega tu primera planta con el botón <b>“Nueva planta”</b>.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL -->
+    <div id="modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm p-4 z-50">
+        <div class="max-w-xl mx-auto mt-10 card shadow-lg fade-in">
+            <div class="px-6 py-4 border-b flex items-center justify-between">
+                <h2 id="modalTitle" class="text-xl font-semibold">Nueva planta</h2>
+                <button id="btnCerrar" class="text-slate-500 hover:text-slate-700">✕</button>
+            </div>
+            <form id="frm" class="p-6 grid gap-4">
+                <input type="hidden" id="hidId" />
+                <div>
+                    <label class="text-sm font-medium">Nombre</label>
+                    <input id="nombre" class="field mt-1" required />
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Nombre científico</label>
+                    <input id="nombreCientifico" class="field mt-1" />
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Descripción</label>
+                    <textarea id="descripcion" rows="3" class="field mt-1"></textarea>
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Temporada de siembra</label>
+                    <input id="temporadaSiembra" class="field mt-1" />
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Categoría</label>
+                    <select id="categoriaId" class="field mt-1"></select>
+                </div>
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <button type="button" id="btnCancelar" class="btn btn-ghost">Cancelar</button>
+                    <button class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        const lista = document.getElementById('lista');
+        const vacio = document.getElementById('vacio');
+        const selCategoria = document.getElementById('selCategoria');
+        const txtBuscar = document.getElementById('txtBuscar');
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const frm = document.getElementById('frm');
+        const hidId = document.getElementById('hidId');
+        const nombre = document.getElementById('nombre');
+        const nombreCientifico = document.getElementById('nombreCientifico');
+        const descripcion = document.getElementById('descripcion');
+        const temporadaSiembra = document.getElementById('temporadaSiembra');
+        const categoriaId = document.getElementById('categoriaId');
+        const btnNueva = document.getElementById('btnNueva');
+        const btnCerrar = document.getElementById('btnCerrar');
+        const btnCancelar = document.getElementById('btnCancelar');
+
+        const getJson = async (url) => {
+            const r = await fetch(url);
+            if (!r.ok) throw new Error(await r.text());
+            return r.json();
+        };
+        const sendJson = async (url, method, data) => {
+            const r = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!r.ok && r.status !== 204) throw new Error(await r.text());
+            return r.status === 204 ? null : r.json();
+        };
+
+        async function cargarCategorias() {
+            try {
+                const cats = await getJson(API_BASE + '/Categorias');
+                renderCategorias(cats);
+            } catch {
+                // Fallback si no tienes /api/Categorias aún
+                const cats = [
+                    { id: 1, nombre: 'Ornamentales' },
+                    { id: 2, nombre: 'Medicinales' },
+                    { id: 3, nombre: 'Frutales' },
+                    { id: 4, nombre: 'Aromáticas' },
+                    { id: 5, nombre: 'Cactus y Suculentas' },
+                ];
+                renderCategorias(cats);
+            }
+        }
+        function renderCategorias(cats) {
+            selCategoria.innerHTML = '<option value="">Todas las categorías</option>';
+            categoriaId.innerHTML = '';
+            for (const c of cats) {
+                const a = document.createElement('option');
+                a.value = c.id; a.textContent = c.nombre;
+                categoriaId.appendChild(a);
+                const b = document.createElement('option');
+                b.value = c.id; b.textContent = c.nombre;
+                selCategoria.appendChild(b);
+            }
+        }
+
+        let plantas = [];
+        async function cargarPlantas() {
+            plantas = await getJson(API_BASE + '/Plantas');
+            pintarLista();
+        }
+
+        const catNombre = (id) => {
+            const opt = Array.from(categoriaId.options).find(o => Number(o.value) === Number(id));
+            return opt ? opt.textContent : '—';
+        }
+
+        function pintarLista() {
+            const q = txtBuscar.value.trim().toLowerCase();
+            const c = selCategoria.value;
+            const data = plantas.filter(p => {
+                const okTexto = !q || (p.nombre || '').toLowerCase().includes(q);
+                const okCat = !c || String(p.categoriaId) === c;
+                return okTexto && okCat;
+            });
+
+            lista.innerHTML = '';
+            if (data.length === 0) { vacio.classList.remove('hidden'); return; }
+            vacio.classList.add('hidden');
+
+            for (const p of data) {
+                const card = document.createElement('article');
+                card.className = 'card p-4 fade-in';
+                card.innerHTML = `
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="text-lg font-semibold">${p.nombre ?? '-'}</h3>
+                  <p class="text-sm text-slate-500"><b>Científico:</b> ${p.nombreCientifico ?? '—'}</p>
+                </div>
+                <span class="chip">${catNombre(p.categoriaId)}</span>
+              </div>
+              <p class="mt-3 text-sm">${p.descripcion ? p.descripcion : 'Sin descripción.'}</p>
+              <p class="mt-2 text-sm text-slate-600"><b>Temporada:</b> ${p.temporadaSiembra ?? '—'}</p>
+              <div class="mt-4 flex gap-2">
+                <button data-edit="${p.id}" class="btn btn-ghost grow">Editar</button>
+                <button data-del="${p.id}" class="btn btn-primary grow bg-red-600 hover:bg-red-700">Eliminar</button>
+              </div>
+            `;
+                lista.appendChild(card);
+            }
+            lista.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => abrirModalEdicion(b.dataset.edit)));
+            lista.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => borrar(b.dataset.del)));
+        }
+
+        async function borrar(id) {
+            if (!confirm('¿Eliminar esta planta?')) return;
+            await fetch(API_BASE + '/Plantas/' + id, { method: 'DELETE' });
+            await cargarPlantas();
+        }
+
+        function abrirModalNuevo() {
+            modalTitle.textContent = 'Nueva planta';
+            hidId.value = ''; frm.reset(); modal.classList.remove('hidden'); nombre.focus();
+        }
+        async function abrirModalEdicion(id) {
+            modalTitle.textContent = 'Editar planta';
+            const p = await getJson(API_BASE + '/Plantas/' + id);
+            hidId.value = p.id;
+            nombre.value = p.nombre ?? '';
+            nombreCientifico.value = p.nombreCientifico ?? '';
+            descripcion.value = p.descripcion ?? '';
+            temporadaSiembra.value = p.temporadaSiembra ?? '';
+            categoriaId.value = p.categoriaId ?? 1;
+            modal.classList.remove('hidden');
+        }
+        const cerrarModal = () => modal.classList.add('hidden');
+
+        frm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const dto = {
+                nombre: nombre.value.trim(),
+                nombreCientifico: nombreCientifico.value.trim(),
+                descripcion: descripcion.value.trim(),
+                temporadaSiembra: temporadaSiembra.value.trim(),
+                categoriaId: Number(categoriaId.value)
+            };
+            const id = hidId.value;
+            if (id) {
+                await sendJson(API_BASE + '/Plantas/' + id, 'PUT', { id: Number(id), ...dto });
+            } else {
+                await sendJson(API_BASE + '/Plantas', 'POST', dto);
+            }
+            cerrarModal();
+            await cargarPlantas();
+        });
+
+        document.getElementById('btnNueva').addEventListener('click', abrirModalNuevo);
+        document.getElementById('btnCerrar').addEventListener('click', cerrarModal);
+        document.getElementById('btnCancelar').addEventListener('click', cerrarModal);
+        document.getElementById('txtBuscar').addEventListener('input', pintarLista);
+        document.getElementById('selCategoria').addEventListener('change', pintarLista);
+
+        (async function init() { await cargarCategorias(); await cargarPlantas(); })();
+    </script>
+</body>
+</html>
